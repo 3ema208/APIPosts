@@ -1,0 +1,4 @@
+addr_bind = ":8081"
+
+[store]
+database_url = "port=5433 user=postgres password=mysecretpassword dbname=prod sslmode=disable"
