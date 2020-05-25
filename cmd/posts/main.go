@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/3ema208/pythontask/internal/app/posts"
+	"github.com/3ema208/APIPosts/internal/app/posts"
 	"github.com/BurntSushi/toml"
 )
 

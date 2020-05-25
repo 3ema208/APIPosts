@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/3ema208/pythontask/internal/app/model"
-	"github.com/3ema208/pythontask/internal/app/store"
+	"github.com/3ema208/APIPosts/internal/app/model"
+	"github.com/3ema208/APIPosts/internal/app/store"
 	mux "github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 )
@@ -94,11 +94,12 @@ func (p *APIPosts) handleCreatePost() http.HandlerFunc {
 			json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 			return
 		}
-		postObj, err := p.store.Post().Create(&model.Post{
-			Title:      req.Title,
-			Link:       req.Link,
-			AuthorName: req.Author,
-		})
+		postObj, err := p.store.Post().Create(
+			&model.Post{
+				Title:      req.Title,
+				Link:       req.Link,
+				AuthorName: req.Author,
+			})
 		if err != nil {
 			// log.Error(err)
 			w.WriteHeader(http.StatusBadRequest)

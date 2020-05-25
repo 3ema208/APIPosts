@@ -1,6 +1,6 @@
 package store
 
-import "github.com/3ema208/pythontask/internal/app/model"
+import "github.com/3ema208/APIPosts/internal/app/model"
 
 // CommentStore ...
 type CommentStore struct {

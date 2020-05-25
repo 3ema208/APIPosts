@@ -1,6 +1,6 @@
 package store
 
-import "github.com/3ema208/pythontask/internal/app/model"
+import "github.com/3ema208/APIPosts/internal/app/model"
 
 // PostStore ..
 type PostStore struct {
@@ -60,12 +60,11 @@ func (p *PostStore) FindByID(postID string) (*model.Post, error) {
 }
 
 // Update ...
-func (p *PostStore) Update(postID string)(*model.Post, error) {
+func (p *PostStore) Update(postID string) (*model.Post, error) {
 	return nil, nil
 }
 
-
 // Delete ...
-func (p *PostStore) Delete(postID string)(*model.Post, error){
+func (p *PostStore) Delete(postID string) (*model.Post, error) {
 	return nil, nil
 }
