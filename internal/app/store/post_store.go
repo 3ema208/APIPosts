@@ -8,7 +8,11 @@ type PostStore struct {
 }
 
 // Create Post
-func (p *PostStore) Create(postModel *model.Post) (*model.Post, error) {
+func (p *PostStore) Create(postModel *model.Post) error {
+	if errVal := postModel.Validate(); errVal != nil {
+		return errVal
+	}
+
 	err := p.store.db.QueryRow(
 		"INSERT INTO posts (title, link, author_name) VALUES ($1, $2, $3) RETURNING id",
 		postModel.Title,
@@ -17,10 +21,9 @@ func (p *PostStore) Create(postModel *model.Post) (*model.Post, error) {
 	).Scan(&postModel.ID)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
-
-	return postModel, nil
+	return nil
 }
 
 // Get ...
@@ -60,11 +63,26 @@ func (p *PostStore) FindByID(postID string) (*model.Post, error) {
 }
 
 // Update ...
-func (p *PostStore) Update(postID string) (*model.Post, error) {
-	return nil, nil
+func (p *PostStore) Update(post *model.Post) error {
+	if err := post.Validate(); err != nil {
+		return err
+	}
+	var PostID int
+	err := p.store.db.QueryRow(
+		"UPDATE posts SET title=$1, link=$2, author_name=$3 WHERE id=$4 RETURNING id",
+		post.Title,
+		post.Link,
+		post.AuthorName,
+		post.ID,
+	).Scan(&PostID)
+	return err
 }
 
 // Delete ...
-func (p *PostStore) Delete(postID string) (*model.Post, error) {
-	return nil, nil
+func (p *PostStore) Delete(PostID string) (*model.Post, error) {
+	var post *model.Post
+	err := p.store.db.QueryRow(
+		"DELETE FROM posts WHERE id=$1 RETURNING id, title, link, author_name, created_time, amount_upvote", PostID,
+	).Scan(&post.ID, &post.Title, &post.Link, &post.AuthorName, &post.CreatedTime, &post.AmountUpvote)
+	return post, err
 }
