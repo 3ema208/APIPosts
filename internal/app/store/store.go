@@ -23,9 +23,10 @@ func New(config *Config) *Store {
 
 // Store ..
 type Store struct {
-	config    *Config
-	db        *sql.DB
-	postStore *PostStore
+	config       *Config
+	db           *sql.DB
+	postStore    *PostStore
+	commentStore *CommentStore
 }
 
 // Open ..
@@ -51,7 +52,15 @@ func (s *Store) Post() *PostStore {
 	if s.postStore != nil {
 		return s.postStore
 	}
-	return &PostStore{
-		store: s,
+	s.postStore = &PostStore{store: s}
+	return s.postStore
+}
+
+// Comments ...
+func (s *Store) Comments() *CommentStore {
+	if s.commentStore != nil {
+		return s.commentStore
 	}
+	s.commentStore = &CommentStore{store: s}
+	return s.commentStore
 }

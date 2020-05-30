@@ -53,10 +53,10 @@ func (p *APIPosts) configRouter() {
 	p.router.HandleFunc("/posts", p.handleCreatePost()).Methods("POST")
 	p.router.HandleFunc("/post/{IDPost:[0-9]+}", p.handlePost).Methods("GET")
 
-	p.router.HandleFunc("/posts/comment", p.handlerComments)
+	p.router.HandleFunc("/post/{IDPost:[0-9]+}/comments", p.handlerComments()).Methods("GET")
+	p.router.HandleFunc("/post/{IDPost:[0-9]+}/comments", p.handlerCreateComment()).Methods("POST")
 }
 
-// handlePosts ...
 func (p *APIPosts) handlePosts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -111,6 +111,39 @@ func (p *APIPosts) handleCreatePost() http.HandlerFunc {
 	}
 }
 
-func (p *APIPosts) handlerComments(w http.ResponseWriter, r *http.Request) {
+func (p *APIPosts) handlerComments() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idPost := mux.Vars(r)["IDPost"]
+		comments, errComm := p.store.Comments().Get(idPost)
+		if errComm != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"error": errComm.Error()})
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(comments)
+	}
+}
 
+func (p *APIPosts) handlerCreateComment() http.HandlerFunc {
+	type ReqComment struct {
+		Author  string `json:"author"`
+		Content string `json:"content"`
+		PostID  int    `json:"postId"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		reqComm := &ReqComment{}
+		if err := json.NewDecoder(r.Body).Decode(reqComm); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+			return
+		}
+		comment := &model.Comment{Author: reqComm.Author, Content: reqComm.Content, PostID: reqComm.PostID}
+		if err := p.store.Comments().Create(comment); err != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(comment)
+	}
 }

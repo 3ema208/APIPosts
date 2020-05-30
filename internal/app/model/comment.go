@@ -11,7 +11,7 @@ type Comment struct {
 	Author      string
 	Content     string
 	CreatedTime string
-	Post        *Post
+	PostID      int
 }
 
 // Validate ...
@@ -20,6 +20,6 @@ func (c *Comment) Validate() error {
 		c,
 		validation.Field(&c.Author, validation.Required, validation.Length(6, 255)),
 		validation.Field(&c.Content, validation.Required),
-		validation.Field(&c.Post, validation.Required, is.Digit),
+		validation.Field(&c.PostID, validation.Required, is.Digit),
 	)
 }

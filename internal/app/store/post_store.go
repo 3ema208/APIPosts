@@ -26,7 +26,7 @@ func (p *PostStore) Create(postModel *model.Post) (*model.Post, error) {
 // Get ...
 func (p *PostStore) Get() ([]*model.Post, error) {
 	var posts []*model.Post
-	rows, err := p.store.db.Query("SELECT id, title, link, author_name, created_time, amount_upvote FROM posts LIMIT $1", 100)
+	rows, err := p.store.db.Query("SELECT id, title, link, author_name, created_time, amount_upvote FROM posts ORDER BY id DESC LIMIT $1", 100)
 	defer rows.Close()
 	if err != nil {
 		return nil, err
